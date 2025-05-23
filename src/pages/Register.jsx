@@ -20,7 +20,14 @@ export default function Register() {
 
     try {
       const res = await fetch(`http://localhost:3001/users?username=${username}`);
-      const existingUsers = await res.json();
+      console.log(res);
+      const existingUsers = await res.text(); //await res.json();
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(existingUsers, "text/html");
+
+
+        console.log(doc);
+      console.log("here 1");
 
       if (existingUsers.length > 0) {
         setErrorMsg("Username already exists");
@@ -29,24 +36,30 @@ export default function Register() {
 
       const newUser = {
         username,
-        website: password, 
-        name: "", 
+        website: password,
+        name: "",
         email: "",
         image: "https://via.placeholder.com/150"
       };
 
+      console.log("here 2");
       const response = await fetch('http://localhost:3001/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser)
       });
+      console.log("here 3");
 
       const createdUser = await response.json();
       saveUserToStorage(createdUser);
       navigate('/home');
+      console.log("here 4");
 
     } catch (err) {
       setErrorMsg("Registration failed. Please try again.");
+      console.log(err);
+      console.error(err);
+      
     }
   };
 

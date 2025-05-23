@@ -19,9 +19,11 @@ export default function Login() {
       const user = users.find((u) => u.website === password);
 
       if (user) {
+        console.log(user);
         saveUserToStorage(user);
         navigate('/home');
       } else {
+        console.log("no user");
         setErrorMsg('Unauthorized: Incorrect username or password');
       }
     } catch (error) {

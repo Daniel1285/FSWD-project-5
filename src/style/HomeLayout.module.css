@@ -1,0 +1,20 @@
+.nav {
+  margin: 2rem 0;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav a {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  background-color: var(--secondary-color);
+}
+

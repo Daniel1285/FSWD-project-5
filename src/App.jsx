@@ -1,29 +1,28 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Info from './pages/info';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import Info from './pages/Info';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
-import Todos from './pages/todos';
+import Todos from './pages/Todos';
 import Posts from './pages/Posts';
 import Albums from './pages/Albums';
+import styles from './style/home.module.css'; // we'll define this next
+import { HomeLayout } from './HomeLayout';
 
 
 function App() {
   const user = JSON.parse(localStorage.getItem("user"));
+  console.log(user);
 
   return (
-    <BrowserRouter>
+    <>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/home/*" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/home/*" element={<Home />} />
         <Route path="*" element={<Navigate to="/login" />} />
-        <Route path="/home/info" element={<Info />} />
-        <Route path="/home/todos" element={<Todos/>} />
-        <Route path="/home/posts" element={<Posts />} />
-        <Route path="/home/albums" element={<Albums />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 
