@@ -1,0 +1,43 @@
+@import './color.module.css';
+
+.comp {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.container {
+  flex: 0 0 50%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: var(--white);
+  padding: 10px;
+  border-radius: 12px;
+  margin: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  color: var(--text-color);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.container:hover {
+  transform: translateY(-4px);
+}
+
+h3 {
+  padding: 10px;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+p {
+  font-size: 1.1rem;
+  margin: 0.75rem 0;
+  text-align: left;
+  padding: 0 1rem;
+}
+

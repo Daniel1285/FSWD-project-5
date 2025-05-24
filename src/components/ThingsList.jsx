@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import styles from '../style/items.module.css';
 
 
 
@@ -17,7 +18,7 @@ export function ThingsList({url, Item }) {
   }, [])
 
   return (
-    <div>
+    <div className={styles.comp}>
     {list.map((item, index) => <Item key={index} data={item} />)}
     </ div>
   )
