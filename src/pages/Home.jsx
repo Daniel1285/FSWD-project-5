@@ -29,7 +29,7 @@ export default function Home() {
         <Route path="todos" element={<Todos user={user}/>} />
         <Route path="albums" element={<Albums user={user}/>} />
         <Route path="albums/:albumId" element={<AlbumList user={user}/>} />
-        <Route path="posts" element={<Posts />} />
+        <Route path="posts" element={<Posts user={user}/>} />
         <Route index element={
           <div className={styles.container}>
             <header className={styles.header}>
