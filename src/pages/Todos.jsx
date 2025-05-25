@@ -1,44 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { saveUserToStorage } from '../utils/StorageControls';
+import Todo from '../components/Todo';
+import styles from '../style/items.module.css';
 
-export function Todos({ user }) {
-  const [todos, setTodos] = useState([])
+
+export default function Todos({ user }) {
+  const [list, setList] = useState([])
+  const url =  `http://localhost:3001/todos?userId=${user.id}`;
+
   useEffect(() => {
-    async function fetchTodos(userId) {
-      console.log(userId);
-      const response = await fetch(`http://localhost:3001/todos?userId=${userId}`);
+    async function fetchList() {
+      const response = await fetch(url);
       const resTodos = await response.json();
       //const todos = resTodos.map(obj => JSON.stringify(obj));
       //console.log(todos);
-      setTodos(resTodos);
+      setList(resTodos);
     }
-    fetchTodos(user.id);
+    fetchList();
   }, [])
 
-  const handleCheckBoxChanged = (id) => {
-    const updatedTodos = todos.map(todo => 
-      id === todo.id ? {...todo, completed: !todo.completed} : todo
-    );
-    console.log(updatedTodos);
-    setTodos(updatedTodos);
-  }
-
   return (
-    <ul>
-      {
-        todos.map(todo => <li key={todo.id}>
-          <h3>{todo.id}</h3>
-          <p>{todo.title}</p>
-          <input
-            type='checkbox'
-            checked={todo.completed}
-            onChange={() => handleCheckBoxChanged(todo.id)}
-          />
-        </li>)
-      }
-    </ul>
+    <div className={styles.comp}>
+    {list.map((item, index) => <Todo key={index} data={item} />)}
+    </ div>
   )
 }
-
-export default Todos;

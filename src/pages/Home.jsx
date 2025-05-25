@@ -6,8 +6,7 @@ import Todos from './Todos';
 import Posts from './Posts';
 import Albums from './Albums';
 import { HomeLayout } from '../HomeLayout';
-import { ThingsList } from '../components/ThingsList';
-import Todo from '../components/Todo';
+import AlbumList from '../components/AlbumList';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -27,10 +26,10 @@ export default function Home() {
       <HomeLayout />
       <Routes>
         <Route path="info" element={<Info />} />
-        <Route path="todos" element={<ThingsList url={`http://localhost:3001/todos?userId=${user.id}`} Item={Todo}/>} />
-        <Route path="todos1" element={<Todos user={user}/>} />
+        <Route path="todos" element={<Todos user={user}/>} />
+        <Route path="albums" element={<Albums user={user}/>} />
+        <Route path="albums/:albumId" element={<AlbumList user={user}/>} />
         <Route path="posts" element={<Posts />} />
-        <Route path="albums" element={<Albums />} />
         <Route index element={
           <div className={styles.container}>
             <header className={styles.header}>

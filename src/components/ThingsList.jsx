@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import styles from '../style/items.module.css';
+import { useParams } from "react-router-dom";
 
 
 
