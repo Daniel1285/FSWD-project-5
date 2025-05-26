@@ -1,4 +1,4 @@
-@import './color.module.css';
+@import '../style/color.module.css';
 
 .comp {
   display: flex;
@@ -28,19 +28,7 @@
 }
 
 .album {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  max-width: 100%;
-}
-
-.album img {
-  flex: 1 1 calc(25% - 10px); 
-  height: auto;
-  max-height: 50vh;
-  object-fit: contain;
-  border-radius: 8px;
+  display: grid;
 }
 
 h3 {

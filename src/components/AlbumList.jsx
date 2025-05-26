@@ -21,12 +21,9 @@ export default function AlbumList({ user }) {
   }, [])
 
   return (
-    <div className={styles.container}>
-      <ul>
-        {albumList.map((item, index) => <li>
-          <img src={item.url} alt={item.title} width="500" height="600"/>
-        </li>)}
-      </ul>
+      <div className={styles.album}>
+        {albumList.map((item, index) => 
+          <img src={item.url} alt={item.title} max-width="50vw" max-height="auto" loading="lazy"/>)}
     </div>
   )
 }

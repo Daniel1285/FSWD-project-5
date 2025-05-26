@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import styles from '../style/items.module.css';
+import {  useEffect, useState } from "react";
+import React from "react";
+import style from '../style/Post.module.css';
+import { useNavigate } from "react-router-dom";
 
 export default function Post({ data }) {
   const [post, setPost] = useState(data);
@@ -22,7 +24,7 @@ export default function Post({ data }) {
   }
 
   return (
-    <div onClick={handleClick} className={styles.container}>
+    <div onClick={handleClick} className={style.container}>
       <p>{post.id}</p>
       <p>{post.title}</p>
       <div>

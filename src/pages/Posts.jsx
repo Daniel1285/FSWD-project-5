@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Post from '../components/Post';
-import styles from '../style/items.module.css';
+import PostItem from '../components/PostItem';
+import styles from '../style/Post.module.css';
 
 
 export default function Posts({ user }) {
@@ -18,7 +18,7 @@ export default function Posts({ user }) {
 
   return (
     <div className={styles.comp}>
-    {list.map((item, index) => <Post key={index} data={item} />)}
+    {list.map((item, index) => <PostItem key={index} data={item} />)}
     </ div>
   )
 }
