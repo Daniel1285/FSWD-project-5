@@ -2,6 +2,10 @@
 
 .comp {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
@@ -24,7 +28,38 @@
 }
 
 .container:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.addAlbum {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.addAlbum input {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 250px;
+}
+
+.addAlbum button,
+.menuButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #4f8cff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.addAlbum button:hover,
+.menuButton:hover {
+  background: #2563eb;
 }
 
 .album {
@@ -36,7 +71,7 @@
 }
 
 .album img {
-  flex: 1 1 calc(25% - 10px); 
+  flex: 1 1 calc(25% - 10px);
   height: auto;
   max-height: 50vh;
   object-fit: contain;
@@ -55,5 +90,6 @@ p {
   margin: 0.75rem 0;
   text-align: left;
   padding: 0 1rem;
+  color: #333;
 }
 
