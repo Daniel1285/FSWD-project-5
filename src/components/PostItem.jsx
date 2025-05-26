@@ -23,7 +23,7 @@ export default function Post({ data }) {
     setshowComments(!showComments);
   }
 
-  return (
+  return (  
     <div onClick={handleClick} className={style.container}>
       <p>{post.id}</p>
       <p>{post.title}</p>
