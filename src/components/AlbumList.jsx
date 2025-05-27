@@ -17,6 +17,7 @@ export default function AlbumList() {
 
   async function fetchAlbum() {
     const url = `http://localhost:3001/photos?albumId=${albumId}`;
+    console.log(url);
     const response = await fetch(url);
     const resAlbum = await response.json();
     setAlbumList(resAlbum);

@@ -52,11 +52,11 @@ export default function PostComments({ postId }) {
     setEditBody(comment.body);
   };
 
-  const handleSaveEdit = async (id) => {
-    await fetch(`http://localhost:3001/comments/${id}`, {
+  const handleSaveEdit = async (comment) => {
+    await fetch(`http://localhost:3001/comments/${comment.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: editBody }),
+      body: JSON.stringify({ body: editBody , email: comment.email, name: comment.name }),
     });
     setEditingId(null);
     setEditBody('');
@@ -94,7 +94,7 @@ export default function PostComments({ postId }) {
                 rows={2}
                 className={styles.input}
               />
-              <button onClick={() => handleSaveEdit(item.id)} style={{marginRight: 8}}>Save</button>
+              <button onClick={() => handleSaveEdit(item)} style={{marginRight: 8}}>Save</button>
               <button onClick={() => setEditingId(null)}>Cancel</button>
             </>
           ) : (
