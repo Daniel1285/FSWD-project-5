@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import styles from '../style/items.module.css';
+import styles from '../style/albums.module.css';
 import AlbumItem from "../components/AlbumItem";
 import { useParams } from "react-router-dom";
 

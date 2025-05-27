@@ -1,132 +1,119 @@
-import { useEffect, useState } from "react";
-import styles from '../style/items.module.css';
+import { useEffect, useState, useRef } from "react";
+import styles from '../style/albumList.module.css';
 import { useParams } from "react-router-dom";
 
 export default function AlbumList() {
-  const [albumList, setAlbumList] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [newPhoto, setNewPhoto] = useState({ title: '', url: '' });
-  const [editingPhotoId, setEditingPhotoId] = useState(null);
-  const [editingPhoto, setEditingPhoto] = useState({ title: '', url: '' });
-  const [menuPhotoId, setMenuPhotoId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({ title: '', url: '' });
+  const [menuId, setMenuId] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(21);
+  const [visible, setVisible] = useState({});
+  const observer = useRef(null);
 
-  const { userId, albumId } = useParams();
-
+  const { albumId } = useParams();
   useEffect(() => {
-    fetchAlbum();
+    fetch(`http://localhost:3001/photos?albumId=${albumId}`)
+      .then(res => res.json())
+      .then(data => setPhotos(data));
   }, [albumId]);
 
-  async function fetchAlbum() {
-    const url = `http://localhost:3001/photos?albumId=${albumId}`;
-    console.log(url);
-    const response = await fetch(url);
-    const resAlbum = await response.json();
-    setAlbumList(resAlbum);
-  }
+useEffect(() => {
+  observer.current = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('data-id');
+        if (id) {
+          setVisible(prev => ({ ...prev, [id]: true }));
+        }
+      }
+    });
+  }, { threshold: 0.2 });
+}, []);
 
-  const handleAddPhoto = async () => {
-    if (!newPhoto.title.trim() || !newPhoto.url.trim()) return;
-    const photo = { ...newPhoto, albumId: Number(albumId) };
+  const addPhoto = async () => {
+    if (!newPhoto.title || !newPhoto.url) return;
     const response = await fetch('http://localhost:3001/photos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(photo),
+      body: JSON.stringify({ ...newPhoto, albumId: Number(albumId) })
     });
-    const createdPhoto = await response.json();
-    setAlbumList((prev) => [...prev, createdPhoto]);
+    const created = await response.json();
+    setPhotos(prev => [...prev, created]);
     setNewPhoto({ title: '', url: '' });
   };
 
-  const handleDeletePhoto = async (id) => {
+  const deletePhoto = async (id) => {
     await fetch(`http://localhost:3001/photos/${id}`, { method: 'DELETE' });
-    setAlbumList((prev) => prev.filter(photo => photo.id !== id));
+    setPhotos(prev => prev.filter(p => p.id !== id));
   };
 
-  const handleEditPhoto = (photo) => {
-    setEditingPhotoId(photo.id);
-    setEditingPhoto({ title: photo.title, url: photo.url });
-  };
-
-  const handleSaveEditPhoto = async (id) => {
-    const updatedPhoto = { ...editingPhoto, albumId: Number(albumId) };
-    await fetch(`http://localhost:3001/photos/${id}`, {
+  const saveEdit = async (id) => {
+    const response = await fetch(`http://localhost:3001/photos/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedPhoto),
+      body: JSON.stringify({ ...editData, albumId: Number(albumId) })
     });
-    setAlbumList((prev) =>
-      prev.map(photo => photo.id === id ? { ...photo, ...updatedPhoto } : photo)
-    );
-    setEditingPhotoId(null);
-    setEditingPhoto({ title: '', url: '' });
+    const updated = await response.json();
+    setPhotos(prev => prev.map(p => p.id === id ? updated : p));
+    setEditingId(null);
   };
 
   return (
     <div>
-      <div className={styles.addAlbum}>
-        <input
-          type="text"
-          placeholder="Photo Title"
-          value={newPhoto.title}
-          onChange={e => setNewPhoto({ ...newPhoto, title: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Photo URL"
-          value={newPhoto.url}
-          onChange={e => setNewPhoto({ ...newPhoto, url: e.target.value })}
-        />
-        <button onClick={handleAddPhoto}>Add Photo</button>
+
+      <div className={styles.addPhotoForm}>
+        <input placeholder="Title" value={newPhoto.title}
+          onChange={e => setNewPhoto({ ...newPhoto, title: e.target.value })} />
+        <input placeholder="URL" value={newPhoto.url}
+          onChange={e => setNewPhoto({ ...newPhoto, url: e.target.value })} />
+        <button onClick={addPhoto}>Add Photo</button>
       </div>
-      <div className={styles.album}>
-        {albumList.map((item) => (
+
+      <div className={styles.albumGrid}>
+        {photos.slice(0, visibleCount).map(photo => (
           <div
-            key={item.id}
-            style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-            onClick={() => setMenuPhotoId(menuPhotoId === item.id ? null : item.id)}
+            key={photo.id}
+            className={`${styles.photoCard} ${visible[photo.id] ? styles.photoVisible : styles.photoHidden}`}
+            data-id={photo.id}
+            ref={el => el && observer.current.observe(el)}
+            onClick={() => setMenuId(menuId === photo.id ? null : photo.id)}
           >
-            <img src={item.url} alt={item.title} style={{ maxWidth: '50vw', maxHeight: '50vh' }} loading="lazy" />
-            <span>{item.title}</span>
-            {menuPhotoId === item.id && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 10,
-                  right: 10,
-                  background: '#fff',
-                  border: '1px solid #ccc',
-                  borderRadius: 6,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  zIndex: 10,
-                  padding: '0.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem'
-                }}
-                onClick={e => e.stopPropagation()}
-              >
-                <button className={styles.menuButton} onClick={() => { setEditingPhotoId(item.id); setEditingPhoto({ title: item.title, url: item.url }); setMenuPhotoId(null); }}>Edit</button>
-                <button className={styles.menuButton} onClick={() => { handleDeletePhoto(item.id); setMenuPhotoId(null); }}>Delete</button>
+            <img src={photo.url} alt={photo.title} loading="lazy" />
+            <span className={styles.title}>{photo.title}</span>
+
+            {menuId === photo.id && (
+              <div className={styles.menu} onClick={e => e.stopPropagation()}>
+                <button className={styles.menuButton} onClick={() => {
+                  setEditData({ title: photo.title, url: photo.url });
+                  setEditingId(photo.id);
+                  setMenuId(null);
+                }}>Edit</button>
+                <button className={styles.menuButton} onClick={() => deletePhoto(photo.id)}>Delete</button>
               </div>
             )}
-            {editingPhotoId === item.id && (
-              <div className={styles.addAlbum} style={{marginTop: '10px'}}>
-                <input
-                  type="text"
-                  value={editingPhoto.title}
-                  onChange={e => setEditingPhoto({ ...editingPhoto, title: e.target.value })}
-                />
-                <input
-                  type="text"
-                  value={editingPhoto.url}
-                  onChange={e => setEditingPhoto({ ...editingPhoto, url: e.target.value })}
-                />
-                <button onClick={() => handleSaveEditPhoto(item.id)}>Save</button>
-                <button onClick={() => setEditingPhotoId(null)}>Cancel</button>
+
+            {editingId === photo.id && (
+              <div className={styles.editForm}>
+                <input value={editData.title}
+                  onChange={e => setEditData({ ...editData, title: e.target.value })} />
+                <input value={editData.url}
+                  onChange={e => setEditData({ ...editData, url: e.target.value })} />
+                <button onClick={() => saveEdit(photo.id)}>Save</button>
+                <button onClick={() => setEditingId(null)}>Cancel</button>
               </div>
             )}
           </div>
         ))}
       </div>
+
+      
+      {visibleCount < photos.length && (
+        <div className={styles.loadMoreWrapper}>
+          <button className={styles.menuButton} onClick={() => setVisibleCount(prev => prev + 9)}>Load more... </button>
+        </div>
+      )}
     </div>
   );
 }

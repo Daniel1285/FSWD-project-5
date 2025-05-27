@@ -1,20 +1,17 @@
-import { useState } from "react";
-import styles from '../style/items.module.css';
-import { useNavigate } from "react-router-dom";
+import styles from '../style/albumItem.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function AlbumItem({ data }) {
   const navigate = useNavigate();
-  //const [album, setAlbum] = useState(data);
-  const album = data;
 
   const handleClick = () => {
-    navigate(`${album.id}`)
-  }
+    navigate(`${data.id}`);
+  };
 
   return (
-    <div onClick={handleClick} className={styles.container}>
-      <p>{album.id}</p>
-      <p>{album.title}</p>
+    <div className={styles.albumCard} onClick={handleClick}>
+      <h3 className={styles.albumId}>#{data.id}</h3>
+      <p className={styles.albumTitle}>{data.title}</p>
     </div>
-  )
+  );
 }

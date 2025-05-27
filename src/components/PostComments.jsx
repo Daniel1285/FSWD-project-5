@@ -4,6 +4,7 @@ import styles from '../style/comments.module.css';
 export default function PostComments({ postId }) {
   const [comments, setComments] = useState([]);
   const [commentBody, setCommentBody] = useState('');
+  const [commentTitle, setCommentTitle] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editBody, setEditBody] = useState('');
@@ -25,19 +26,20 @@ export default function PostComments({ postId }) {
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    if (!commentBody.trim()) return;
+    if (!commentBody.trim() || !commentTitle.trim()) return;
     setSubmitting(true);
     await fetch('http://localhost:3001/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         postId: Number(postId),
-        name: user?.username || 'Anonymous',
+        title: commentTitle,
         email: user?.email || '',
         body: commentBody,
       }),
     });
     setCommentBody('');
+    setCommentTitle('');
     setSubmitting(false);
     await refreshComments();
   };
@@ -56,7 +58,7 @@ export default function PostComments({ postId }) {
     await fetch(`http://localhost:3001/comments/${comment.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ body: editBody , email: comment.email, name: comment.name }),
+      body: JSON.stringify({ body: editBody, email: comment.email, title: comment.title }),
     });
     setEditingId(null);
     setEditBody('');
@@ -65,12 +67,21 @@ export default function PostComments({ postId }) {
 
   const isUserComment = (comment) =>
     user &&
-    ((comment.name && comment.name === user.username) ||
-      (comment.email && comment.email === user.email));
+    (
+      (comment.email && comment.email === user.email)
+    );
 
   return (
     <div className={styles.thread}>
       <form onSubmit={handleAddComment} className={styles.addCommentForm}>
+        <input
+          type="text"
+          placeholder="Title"
+          value={commentTitle}
+          onChange={e => setCommentTitle(e.target.value)}
+          required
+          className={styles.input}
+        />
         <textarea
           placeholder="Add a comment..."
           value={commentBody}
@@ -78,14 +89,16 @@ export default function PostComments({ postId }) {
           rows={2}
           required
         />
-        <button type="submit" disabled={submitting || !commentBody.trim()}>
+        <button type="submit" disabled={submitting || !commentBody.trim() || !commentTitle.trim()}>
           {submitting ? "Adding..." : "Add Comment"}
         </button>
       </form>
+
       {comments.map((item) => (
         <div key={item.id} className={styles.comment}>
-          <span className={styles.commentName}>{item.name}</span>
+          <span className={styles.commentName}>{item.name || item.title}</span>
           <span className={styles.commentEmail}> @{item.email}</span>
+
           {editingId === item.id ? (
             <>
               <textarea
@@ -94,15 +107,16 @@ export default function PostComments({ postId }) {
                 rows={2}
                 className={styles.input}
               />
-              <button onClick={() => handleSaveEdit(item)} style={{marginRight: 8}}>Save</button>
+              <button onClick={() => handleSaveEdit(item)} style={{ marginRight: 8 }}>Save</button>
               <button onClick={() => setEditingId(null)}>Cancel</button>
             </>
           ) : (
             <div className={styles.commentBody}>{item.body}</div>
           )}
+
           {isUserComment(item) && editingId !== item.id && (
             <div style={{ marginTop: 4 }}>
-              <button onClick={() => handleEditComment(item)} style={{marginRight: 8}}>Edit</button>
+              <button onClick={() => handleEditComment(item)} style={{ marginRight: 8 }}>Edit</button>
               <button onClick={() => handleDeleteComment(item.id)}>Delete</button>
             </div>
           )}
