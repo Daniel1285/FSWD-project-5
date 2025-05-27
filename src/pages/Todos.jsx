@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import TodoItem from '../components/TodoItem';
 import styles from '../style/todos.module.css';
 
-export default function Todos({ user }) {
+export default function Todos() {
+  const { userId } = useParams();
   const [list, setList] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [filter, setFilter] = useState({ id: '', title: '', status: 'all' });
-  const url = `http://localhost:3001/todos?userId=${user.id}`;
+  const [sortBy, setSortBy] = useState('default');
+  const url = `http://localhost:3001/todos?userId=${userId}`;
 
   useEffect(() => {
     async function fetchList() {
@@ -41,7 +44,7 @@ export default function Todos({ user }) {
     if (!newTodoTitle.trim()) return;
 
     const newTodo = {
-      userId: user.id,
+      userId: userId,
       title: newTodoTitle,
       completed: false,
     };
@@ -76,6 +79,19 @@ export default function Todos({ user }) {
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
 
+  const sortedTodos = [...filteredTodos].sort((a, b) => {
+    if (sortBy === 'title') {
+      return a.title.localeCompare(b.title);
+    }
+    if (sortBy === 'completed') {
+      return a.completed === b.completed ? 0 : a.completed ? 1 : -1;
+    }
+    if (sortBy === 'id') {
+      return a.id - b.id;
+    }
+    return 0;
+  });
+
   return (
     <div className={styles.comp}>
       <div className={styles.addTodo}>
@@ -108,9 +124,18 @@ export default function Todos({ user }) {
           <option value="completed">Completed</option>
           <option value="pending">Pending</option>
         </select>
+        <div>
+          <label>Sort by: </label>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="default">Default</option>
+            <option value="title">Title</option>
+            <option value="completed">Completed</option>
+            <option value="id">Id</option>
+          </select>
+        </div>
       </div>
 
-      {filteredTodos.map((item) => (
+      {sortedTodos.map((item) => (
         <TodoItem
           key={item.id}
           data={item}

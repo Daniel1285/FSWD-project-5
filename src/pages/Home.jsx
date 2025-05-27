@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { getUserFromStorage, removeUserFromStorage } from '../utils/StorageControls';
-import styles from '../style/home.module.css'; // we'll define this next
+import styles from '../style/home.module.css';
 import Info from './Info';
 import Todos from './Todos';
 import Posts from './Posts';
@@ -17,33 +17,29 @@ export default function Home() {
     navigate('/login');
   };
 
-  const handleNavigate = (path) => {
-    navigate(`/home/${path}`);
-  };
-
   return (
     <>
-      <HomeLayout />
+      <HomeLayout userId={user.id}/>
       <Routes>
-        <Route path="info" element={<Info />} />
-        <Route path="todos" element={<Todos user={user}/>} />
-        <Route path="albums" element={<Albums user={user}/>} />
-        <Route path="albums/:albumId" element={<AlbumList user={user}/>} />
-        <Route path="posts" element={<Posts user={user}/>} />
-        <Route index element={
-          <div className={styles.container}>
-            <header className={styles.header}>
-              <h2>Welcome, {user?.name || user?.username}!</h2>
-              <button onClick={handleLogout} className={styles.logout}>Logout</button>
-            </header>
-
-            <div className={styles.content}>
-              <p>Select an option above to get started.</p>
+        <Route path="users/:userId">
+          <Route path="info" element={<Info />} />
+          <Route path="todos" element={<Todos />} />
+          <Route path="albums" element={<Albums />} />
+          <Route path="albums/:albumId" element={<AlbumList />} />
+          <Route path="posts/*" element={<Posts />} />
+          <Route index element={
+            <div className={styles.container}>
+              <header className={styles.header}>
+                <h2>Welcome, {user?.name || user?.username}!</h2>
+                <button onClick={handleLogout} className={styles.logout}>Logout</button>
+              </header>
+              <div className={styles.content}>
+                <p>Select an option above to get started.</p>
+              </div>
             </div>
-          </div>
-        } />
+          } />
+        </Route>
       </Routes>
-
     </>
   );
 }

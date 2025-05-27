@@ -21,7 +21,7 @@ export default function Login() {
       if (user) {
         console.log(user);
         saveUserToStorage(user);
-        navigate('/home');
+        navigate(`/home/users/${user.id}/`);
       } else {
         console.log("no user");
         setErrorMsg('Unauthorized: Incorrect username or password');

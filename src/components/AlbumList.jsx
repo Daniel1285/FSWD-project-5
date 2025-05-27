@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import styles from '../style/items.module.css';
 import { useParams } from "react-router-dom";
 
-export default function AlbumList({ user }) {
+export default function AlbumList() {
   const [albumList, setAlbumList] = useState([]);
   const [newPhoto, setNewPhoto] = useState({ title: '', url: '' });
   const [editingPhotoId, setEditingPhotoId] = useState(null);
   const [editingPhoto, setEditingPhoto] = useState({ title: '', url: '' });
   const [menuPhotoId, setMenuPhotoId] = useState(null);
 
-  const { albumId } = useParams();
+  const { userId, albumId } = useParams();
 
   useEffect(() => {
     fetchAlbum();

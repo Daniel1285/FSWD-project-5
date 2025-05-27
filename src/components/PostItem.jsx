@@ -1,37 +1,35 @@
-import {  useEffect, useState } from "react";
-import React from "react";
-import style from '../style/Post.module.css';
-import { useNavigate } from "react-router-dom";
+import { use, useEffect, useState } from "react";
+import styles from '../style/Post.module.css';
+import { useNavigate } from 'react-router-dom';
 
-export default function Post({ data }) {
-  const [post, setPost] = useState(data);
-  const [comments, setComments] = useState([]);
-  const [showComments, setshowComments] = useState(false);
+export default function PostItem({ post, username }) {
+  const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchComments() {
-      const response = await fetch(`http://localhost:3001/comments?postId=${post.id}`);
-      const comments = await response.json();
-      console.log(comments);
-      setComments(comments);
-    }
-    fetchComments();
-  }, [])
-
-  const handleClick = () => {
-    console.log(showComments);
-    setshowComments(!showComments);
-  }
-
-  return (  
-    <div onClick={handleClick} className={style.container}>
-      <p>{post.id}</p>
-      <p>{post.title}</p>
-      <div>
-        {showComments && comments.map((item) => (
-          <p key={item.id}>{JSON.stringify(item)}</p>
-        ))}
+  return (
+    <div className={styles.postTitleRow}
+        onClick={() => setExpanded((prev) => !prev)}
+    >
+      <div
+      >
+        <span className={styles.postTitle}>{post.title}</span>
+        <span className={styles.postUser}>
+          by {username}
+        </span>
       </div>
+      {expanded && (
+        <div className={styles.postBody}>
+          { post.body }
+          <button
+            className={styles.commentButton}
+            onClick={e => {
+              e.stopPropagation();
+              navigate(`${post.id}`);
+            }}
+            title="View comments"
+          >+</button>
+        </div>
+      )}
     </div>
-  )
+  );
 }

@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react"
 import styles from '../style/items.module.css';
 import AlbumItem from "../components/AlbumItem";
+import { useParams } from "react-router-dom";
 
-export default function Albums({user}){
+export default function Albums(){
+  const { userId } = useParams();
   const [albumList, setAlbumList] = useState([]);
   const [newAlbumTitle, setNewAlbumTitle] = useState('');
 
   useEffect(() => {
     async function fetchList() {
-      const url = `http://localhost:3001/albums?userId=${user.id}`;
+      const url = `http://localhost:3001/albums?userId=${userId}`;
       const response = await fetch(url);
       const resTodos = await response.json();
       setAlbumList(resTodos);
@@ -18,7 +20,7 @@ export default function Albums({user}){
 
   const handleAddAlbum = async () => {
     if (!newAlbumTitle.trim()) return;
-    const newAlbum = { userId: user.id, title: newAlbumTitle };
+    const newAlbum = { userId: userId, title: newAlbumTitle };
     const response = await fetch('http://localhost:3001/albums', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
