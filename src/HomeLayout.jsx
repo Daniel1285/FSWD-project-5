@@ -5,7 +5,7 @@ export function HomeLayout({userId}) {
 
   return (
     <nav className={styles.nav}>
-      <NavLink to={`/home`}>Home</NavLink>
+      <NavLink to={`/home/users/${userId}`}>Home</NavLink>
       <NavLink to={`/home/users/${userId}/info`}>Info</NavLink>
       <NavLink to={`/home/users/${userId}/todos`}>Todos</NavLink>
       <NavLink to={`/home/users/${userId}/posts`}>Posts</NavLink>

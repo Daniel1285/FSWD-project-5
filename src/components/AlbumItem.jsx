@@ -8,7 +8,7 @@ export default function AlbumItem({ data }) {
   const album = data;
 
   const handleClick = () => {
-    navigate(`/home/albums/${album.id}`)
+    navigate(`${album.id}`)
   }
 
   return (
