@@ -1,14 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../style/login.module.css'; // reuse login styles
 import { saveUserToStorage } from '../utils/StorageControls';
 
 export default function Register() {
-  const [username, setUsername] = useState('');
+  //const [username, setUsername] = useState('');
+  const usernameRef = useRef();
+  const nameRef = useRef();
+  const emailRef = useRef();
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    //set error message to password mismatch if passwords do not match
+    if (password && verifyPassword && password !== verifyPassword) {
+      setErrorMsg("Passwords do not match");
+    } else {
+      setErrorMsg('');
+    }
+  }, [password, verifyPassword]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -19,26 +31,30 @@ export default function Register() {
     }
 
     try {
+      const name = nameRef.current.value;
+      const username = usernameRef.current.value;
+      const email = emailRef.current.value;
+      console.log("Username:", username);
       const res = await fetch(`http://localhost:3001/users?username=${username}`);
       console.log(res);
-      const existingUsers = await res.text(); //await res.json();
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(existingUsers, "text/html");
+      const existingUsers = await res.json();
+      console.log("Existing Users:", existingUsers, "Length: ", existingUsers.length);
 
 
-        console.log(doc);
       console.log("here 1");
 
       if (existingUsers.length > 0) {
         setErrorMsg("Username already exists");
         return;
       }
-
       const newUser = {
-        username,
+        name: name,
+        username: username,
         website: password,
-        name: "",
-        email: "",
+        email: email,
+        address: null,
+        phone: null,
+        company: null,
         image: "https://via.placeholder.com/150"
       };
 
@@ -72,10 +88,28 @@ export default function Register() {
         <input
           className={styles.input}
           type="text"
+          placeholder="Full Name"
+          ref={nameRef}
+          //value={username}
+          //onChange={(e) => setUsername(e.target.value)}
+        />
+        
+        <input
+          className={styles.input}
+          type="text"
           placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
+          ref={usernameRef}
+          //value={username}
+          //onChange={(e) => setUsername(e.target.value)}
+        />
+        
+        <input
+          className={styles.input}
+          type="email"
+          placeholder="Email"
+          ref={emailRef}
+          //value={username}
+          //onChange={(e) => setUsername(e.target.value)}
         />
 
         <input
