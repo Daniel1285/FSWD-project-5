@@ -5,7 +5,7 @@ import Info from './Info';
 import Todos from './Todos';
 import Posts from './Posts';
 import Albums from './Albums';
-import { HomeLayout } from '../HomeLayout';
+import { Navbar } from '../components/Navbar';
 import AlbumList from '../components/AlbumList';
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeLayout userId={user.id}/>
+      <Navbar userId={user.id}/>
       <Routes>
         <Route path="users/:userId">
           <Route path="info" element={<Info />} />

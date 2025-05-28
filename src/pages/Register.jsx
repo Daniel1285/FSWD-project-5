@@ -47,7 +47,21 @@ export default function Register() {
         setErrorMsg("Username already exists");
         return;
       }
+
+      const countRes = await fetch('http://localhost:3001/userCount');
+      const countData = await countRes.json();
+      console.log("Count Data:", countData);
+      const myID = countData.count + 1; // Assuming IDs are sequential and start from 1
+
+      // pur to update userCount
+      await fetch('http://localhost:3001/userCount', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ count: myID })
+      });
+
       const newUser = {
+        id: myID,
         name: name,
         username: username,
         website: password,
@@ -55,7 +69,7 @@ export default function Register() {
         address: null,
         phone: null,
         company: null,
-        image: "https://via.placeholder.com/150"
+        image: "https://png.pngtree.com/png-vector/20240715/ourmid/pngtree-man-profile-icon-silhouette-of-businessman-face-profile-vector-png-image_7058983.png"
       };
 
       console.log("here 2");
@@ -68,7 +82,7 @@ export default function Register() {
 
       const createdUser = await response.json();
       saveUserToStorage(createdUser);
-      navigate('/home');
+      navigate('/home/users/' + createdUser.id);
       console.log("here 4");
 
     } catch (err) {
