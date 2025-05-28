@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TodoItem from '../components/TodoItem';
 import styles from '../style/todos.module.css';
@@ -7,17 +7,21 @@ export default function Todos() {
   const { userId } = useParams();
   const [list, setList] = useState([]);
   const [filteredTodos, setFilteredTodos] = useState([]);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const newTodoTitle = useRef();
   const [filter, setFilter] = useState({ id: '', title: '', status: 'all' });
   const [sortBy, setSortBy] = useState('default');
   const url = `http://localhost:3001/todos?userId=${userId}`;
 
   useEffect(() => {
     async function fetchList() {
-      const response = await fetch(url);
-      const resTodos = await response.json();
-      setList(resTodos);
-      setFilteredTodos(resTodos);
+      try {
+        const response = await fetch(url);
+        const resTodos = await response.json();
+        setList(resTodos);
+        setFilteredTodos(resTodos);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
     }
     fetchList();
   }, []);
@@ -41,31 +45,38 @@ export default function Todos() {
   }, [filter, list]);
 
   const handleAddTodo = async () => {
-    if (!newTodoTitle.trim()) return;
+    if (!newTodoTitle.current.value.trim()) return;
 
     const newTodo = {
       userId: userId,
-      title: newTodoTitle,
+      title: newTodoTitle.current.value,
       completed: false,
     };
 
-    const response = await fetch('http://localhost:3001/todos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newTodo),
-    });
+    try {
+      const response = await fetch('http://localhost:3001/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTodo),
+      });
 
-    const createdTodo = await response.json();
-    setList((prevList) => [...prevList, createdTodo]);
-    setNewTodoTitle('');
+      const createdTodo = await response.json();
+      setList((prevList) => [...prevList, createdTodo]);
+      newTodoTitle.current.value = '';
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
   };
 
   const handleDeleteTodo = async (id) => {
-    await fetch(`http://localhost:3001/todos/${id}`, {
-      method: 'DELETE',
-    });
-
-    setList((prevList) => prevList.filter((todo) => todo.id !== id));
+    try {
+      await fetch(`http://localhost:3001/todos/${id}`, {
+        method: 'DELETE',
+      });
+      setList((prevList) => prevList.filter((todo) => todo.id !== id));
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
   };
 
   const handleUpdateTodo = (updatedTodo) => {
@@ -98,8 +109,7 @@ export default function Todos() {
         <input
           type="text"
           placeholder="New Todo"
-          value={newTodoTitle}
-          onChange={(e) => setNewTodoTitle(e.target.value)}
+          ref={newTodoTitle}
         />
         <button onClick={handleAddTodo}>Add Todo</button>
       </div>

@@ -9,11 +9,13 @@ export function ThingsList({url, Item }) {
 
   useEffect(() => {
     async function fetchList() {
-      const response = await fetch(url);
-      const resTodos = await response.json();
-      //const todos = resTodos.map(obj => JSON.stringify(obj));
-      //console.log(todos);
-      setList(resTodos);
+      try {
+        const response = await fetch(url);
+        const resTodos = await response.json();
+        setList(resTodos);
+      } catch (error) {
+        console.error('Error fetching list:', error);
+      }
     }
     fetchList();
   }, [])

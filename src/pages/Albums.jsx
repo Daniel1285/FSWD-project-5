@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useRef, useEffect, useState } from "react"
 import styles from '../style/albums.module.css';
 import AlbumItem from "../components/AlbumItem";
 import { useParams } from "react-router-dom";
@@ -6,29 +6,40 @@ import { useParams } from "react-router-dom";
 export default function Albums(){
   const { userId } = useParams();
   const [albumList, setAlbumList] = useState([]);
-  const [newAlbumTitle, setNewAlbumTitle] = useState('');
+  const newAlbumTitle = useRef();
 
   useEffect(() => {
     async function fetchList() {
-      const url = `http://localhost:3001/albums?userId=${userId}`;
-      const response = await fetch(url);
-      const resTodos = await response.json();
-      setAlbumList(resTodos);
+      try {
+        const url = `http://localhost:3001/albums?userId=${userId}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch albums');
+        const resTodos = await response.json();
+        setAlbumList(resTodos);
+      } catch (error) {
+        console.error('Error fetching albums:', error);
+      }
     }
     fetchList();
-  }, [])
+  }, [userId])
 
   const handleAddAlbum = async () => {
-    if (!newAlbumTitle.trim()) return;
-    const newAlbum = { userId: userId, title: newAlbumTitle };
-    const response = await fetch('http://localhost:3001/albums', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newAlbum),
-    });
-    const createdAlbum = await response.json();
-    setAlbumList((prev) => [...prev, createdAlbum]);
-    setNewAlbumTitle('');
+    if (!newAlbumTitle.current.value.trim()) return;
+    try {
+      const newAlbum = { userId: userId, title: newAlbumTitle.current.value };
+      console.log('Adding new album:', newAlbum);
+      const response = await fetch('http://localhost:3001/albums', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAlbum),
+      });
+      if (!response.ok) throw new Error('Failed to add album');
+      const createdAlbum = await response.json();
+      setAlbumList((prev) => [...prev, createdAlbum]);
+      newAlbumTitle.current.value = '';
+    } catch (error) {
+      console.error('Error adding album:', error);
+    }
   };
 
   return (
@@ -37,8 +48,7 @@ export default function Albums(){
         <input
           type="text"
           placeholder="New Album Title"
-          value={newAlbumTitle}
-          onChange={e => setNewAlbumTitle(e.target.value)}
+          ref={newAlbumTitle}
         />
         <button onClick={handleAddAlbum}>Add Album</button>
       </div>

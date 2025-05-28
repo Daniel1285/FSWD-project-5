@@ -18,15 +18,19 @@ export default function Posts() {
 
   useEffect(() => {
     async function fetchData() {
-      const postsRes = await fetch('http://localhost:3001/posts');
-      const posts = await postsRes.json();
-      setPostList(posts);
-      setFiltered(posts);
+      try {
+        const postsRes = await fetch('http://localhost:3001/posts');
+        const posts = await postsRes.json();
+        setPostList(posts);
+        setFiltered(posts);
 
-      const usersRes = await fetch('http://localhost:3001/users');
-      const usersReturned = await usersRes.json();
-      console.log('Fetched users:', usersReturned);
-      setUsers(usersReturned);
+        const usersRes = await fetch('http://localhost:3001/users');
+        const usersReturned = await usersRes.json();
+        console.log('Fetched users:', usersReturned);
+        setUsers(usersReturned);
+      } catch (error) {
+        console.error('Error fetching posts or users:', error);
+      }
     }
     fetchData();
   }, []);

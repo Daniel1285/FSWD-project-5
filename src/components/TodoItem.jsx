@@ -9,14 +9,16 @@ export default function Todo({ data, onDelete, onUpdate }) {
   const handleCheckBoxChanged = async () => {
     const updatedTodo = { ...todo, completed: !todo.completed };
     setTodo(updatedTodo);
-
-    await fetch(`http://localhost:3001/todos/${todo.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedTodo),
-    });
-
-    onUpdate(updatedTodo);
+    try {
+      await fetch(`http://localhost:3001/todos/${todo.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTodo),
+      });
+      onUpdate(updatedTodo);
+    } catch (error) {
+      console.error('Error updating todo status:', error);
+    }
   };
 
   const handleDelete = () => {
@@ -27,14 +29,16 @@ export default function Todo({ data, onDelete, onUpdate }) {
     const updatedTodo = { ...todo, title: editTitle };
     setTodo(updatedTodo);
     setIsEditing(false);
-
-    await fetch(`http://localhost:3001/todos/${todo.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedTodo),
-    });
-
-    onUpdate(updatedTodo);
+    try {
+      await fetch(`http://localhost:3001/todos/${todo.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTodo),
+      });
+      onUpdate(updatedTodo);
+    } catch (error) {
+      console.error('Error saving edited todo:', error);
+    }
   };
 
   return (
