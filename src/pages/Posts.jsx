@@ -6,6 +6,7 @@ import PostItem from '../components/PostItem';
 import { getUserFromStorage } from '../utils/StorageControls'; // adjust path as needed
 
 export default function Posts() {
+  console.log('Posts component rendered');
   const { userId, postId } = useParams();
   const isPostDetail = /\/posts\/\d+$/.test(window.location.pathname);
   console.log('postid: ', postId, ' isPostDetail:', isPostDetail);
@@ -34,7 +35,7 @@ export default function Posts() {
       }
     }
     fetchData();
-  }, []);
+  }, [isPostDetail]);
 
   useEffect(() => {
     let filteredPosts = PostList;
