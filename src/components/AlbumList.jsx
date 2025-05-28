@@ -14,9 +14,16 @@ export default function AlbumList() {
 
   const { albumId } = useParams();
   useEffect(() => {
-    fetch(`http://localhost:3001/photos?albumId=${albumId}`)
-      .then(res => res.json())
-      .then(data => setPhotos(data));
+    async function fetchPhotos() {
+      try {
+        const res = await fetch(`http://localhost:3001/photos?albumId=${albumId}`);
+        const data = await res.json();
+        setPhotos(data);
+      } catch (error) {
+        console.error('Error fetching photos:', error);
+      }
+    }
+    fetchPhotos();
   }, [albumId]);
 
 useEffect(() => {
@@ -34,30 +41,42 @@ useEffect(() => {
 
   const addPhoto = async () => {
     if (!newPhoto.title || !newPhoto.url) return;
-    const response = await fetch('http://localhost:3001/photos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...newPhoto, albumId: Number(albumId) })
-    });
-    const created = await response.json();
-    setPhotos(prev => [...prev, created]);
-    setNewPhoto({ title: '', url: '' });
+    try {
+      const response = await fetch('http://localhost:3001/photos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newPhoto, albumId: Number(albumId) })
+      });
+      const created = await response.json();
+      setPhotos(prev => [...prev, created]);
+      setNewPhoto({ title: '', url: '' });
+    } catch (error) {
+      console.error('Error adding photo:', error);
+    }
   };
 
   const deletePhoto = async (id) => {
-    await fetch(`http://localhost:3001/photos/${id}`, { method: 'DELETE' });
-    setPhotos(prev => prev.filter(p => p.id !== id));
+    try {
+      await fetch(`http://localhost:3001/photos/${id}`, { method: 'DELETE' });
+      setPhotos(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+    }
   };
 
   const saveEdit = async (id) => {
-    const response = await fetch(`http://localhost:3001/photos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...editData, albumId: Number(albumId) })
-    });
-    const updated = await response.json();
-    setPhotos(prev => prev.map(p => p.id === id ? updated : p));
-    setEditingId(null);
+    try {
+      const response = await fetch(`http://localhost:3001/photos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editData, albumId: Number(albumId) })
+      });
+      const updated = await response.json();
+      setPhotos(prev => prev.map(p => p.id === id ? updated : p));
+      setEditingId(null);
+    } catch (error) {
+      console.error('Error saving photo edit:', error);
+    }
   };
 
   return (

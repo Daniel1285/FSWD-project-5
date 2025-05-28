@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from '../style/Post.module.css';
 import PostComments from '../components/PostComments';
+import { getUserFromStorage } from '../utils/StorageControls';
 
 export default function PostDetail() {
   const { postId, userId } = useParams();
@@ -26,8 +27,7 @@ export default function PostDetail() {
     } else {
       // For new post, show current user as author
       async function fetchCurrentUser() {
-        const res = await fetch(`http://localhost:3001/users/${userId}`);
-        setUser(await res.json());
+        setUser(getUserFromStorage()); 
       }
       fetchCurrentUser();
     }
@@ -56,6 +56,8 @@ export default function PostDetail() {
     }
   };
 
+  const isAuthor = user && getUserFromStorage()?.id === user.id;
+
   if (!post) return <div>Loading...</div>;
 
   return (
@@ -71,6 +73,7 @@ export default function PostDetail() {
               placeholder="Title"
               required
               autoFocus
+              disabled={!isAuthor}
             />
           ) : (
             <h2 className={styles.blogTitle}>{post.title}</h2>
@@ -86,12 +89,13 @@ export default function PostDetail() {
               placeholder="Body"
               rows={6}
               required
+              disabled={!isAuthor}
             />
           ) : (
             post.body
           )}
         </div>
-        {editing && (
+        {editing && isAuthor && (
           <button
             type="submit"
             className={styles.savePostButton}
@@ -101,7 +105,7 @@ export default function PostDetail() {
           </button>
         )}
       </form>
-      {!isNew && !editing && (
+      {!isNew && !editing && isAuthor && (
         <button
           className={styles.editPostButton}
           onClick={() => setEditing(true)}
@@ -110,7 +114,7 @@ export default function PostDetail() {
           Edit Post
         </button>
       )}
-      {!isNew && <PostComments postId={postId}/>}
+      {!isNew && <PostComments postId={postId}/>} 
     </div>
   );
 }

@@ -6,8 +6,9 @@ import PostItem from '../components/PostItem';
 import { getUserFromStorage } from '../utils/StorageControls'; // adjust path as needed
 
 export default function Posts() {
-  const { userId } = useParams();
-  // Get current user ID from params or storage
+  const { userId, postId } = useParams();
+  const isPostDetail = /\/posts\/\d+$/.test(window.location.pathname);
+  console.log('postid: ', postId, ' isPostDetail:', isPostDetail);
   const currentUserId = userId || getUserFromStorage()?.id;
   const [PostList, setPostList] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -52,11 +53,11 @@ export default function Posts() {
 
   return (
     <div className={styles.postsLayout}>
-      <aside className={styles.postsSidebar}>
+      <aside className={styles.postsSidebar} style={{ pointerEvents: isPostDetail ? 'none' : 'auto', opacity: isPostDetail ? 0.5 : 1 }}>
         <h3>Filter Posts</h3>
         <div>
           <label>User:</label>
-          <select value={userFilter} onChange={e => setUserFilter(e.target.value)}>
+          <select value={userFilter} onChange={e => setUserFilter(e.target.value)} disabled={isPostDetail}>
             <option value="">All</option>
             {users.map(u => (
               <option key={u.id} value={u.id}>{u.username}</option>
@@ -71,12 +72,14 @@ export default function Posts() {
             onChange={e => setSearch(e.target.value)}
             placeholder="Search title or body"
             className={styles.searchInput}
+            disabled={isPostDetail}
           />
         </div>
         <button
           className={styles.addPostButton}
           style={{ marginTop: '1.5rem', width: '100%' }}
           onClick={() => navigate('new')}
+          disabled={isPostDetail}
         >
           + Add Post
         </button>
